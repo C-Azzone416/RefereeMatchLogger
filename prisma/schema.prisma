@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -83,8 +83,8 @@ model GameEvent {
   playerName    String?
   playerNumber  String?
 
-  // Type-specific details (JSON string for SQLite compatibility)
-  detail        String?
+  // Type-specific details
+  detail        Json?
 
   createdAt     DateTime @default(now())
 
@@ -123,9 +123,8 @@ model SupplementalReport {
   // Main narrative (plain language, facts only, Laws of the Game terminology)
   narrative     String?
 
-  // Offense-specific structured data (JSON string)
-  // Schema varies by incidentType — see lib/supplementalDetails.ts for shape per type
-  details       String?
+  // Offense-specific structured data — shape varies by incidentType, see lib/supplementalTypes.ts
+  details       Json?
 
   // Submission tracking
   // draft | complete | submitted

@@ -12,7 +12,7 @@ type GameEvent = {
   team: string;
   playerName: string | null;
   playerNumber: string | null;
-  detail: string | null;
+  detail: { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } | null;
   createdAt: string;
 };
 
@@ -74,7 +74,7 @@ function minuteLabel(e: { minute: number; stoppageTime: number | null }) {
 function eventSummary(e: GameEvent, homeTeam: string, awayTeam: string) {
   const team = e.team === "home" ? homeTeam : awayTeam;
   const player = e.playerNumber ? `#${e.playerNumber} ${e.playerName || ""}` : e.playerName || "";
-  const detail = e.detail ? JSON.parse(e.detail) : {};
+  const detail = e.detail ?? {};
 
   switch (e.eventType) {
     case "goal": {
@@ -253,7 +253,7 @@ export default function GameLog({ match }: { match: Match }) {
     if (res.ok) {
       setEvents((prev) => prev.filter((e) => e.id !== eventId));
       if (ev.eventType === "goal") {
-        const d = ev.detail ? JSON.parse(ev.detail) : {};
+        const d = ev.detail ?? {};
         const scoreTeam = d.ownGoal ? (ev.team === "home" ? "away" : "home") : ev.team;
         if (scoreTeam === "home") setHomeScore((s) => Math.max(0, s - 1));
         else setAwayScore((s) => Math.max(0, s - 1));
@@ -425,8 +425,8 @@ export default function GameLog({ match }: { match: Match }) {
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-sm text-yellow-800">
                     <span className="font-semibold">Prior caution on record:</span>{" "}
                     {teamName} · #{existingYellow.playerNumber}{existingYellow.playerName ? ` ${existingYellow.playerName}` : ""} at {minuteLabel(existingYellow)}
-                    {existingYellow.detail && JSON.parse(existingYellow.detail).reason
-                      ? ` — ${JSON.parse(existingYellow.detail).reason}`
+                    {existingYellow.detail && (existingYellow.detail as Record<string, unknown>).reason
+                      ? ` — ${(existingYellow.detail as Record<string, unknown>).reason}`
                       : ""}
                   </div>
                 )}

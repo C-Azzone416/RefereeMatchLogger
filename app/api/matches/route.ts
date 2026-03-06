@@ -86,13 +86,12 @@ export async function GET(req: NextRequest) {
         ...(competitionLevel && { competitionLevel }),
         ...(q && {
           OR: [
-            // mode: 'insensitive' is needed for PostgreSQL — SQLite LIKE is already case-insensitive
-            { homeTeam:        { contains: q } },
-            { awayTeam:        { contains: q } },
-            { competitionName: { contains: q } },
-            { venue:           { contains: q } },
-            { homeHeadCoach:   { contains: q } },
-            { awayHeadCoach:   { contains: q } },
+            { homeTeam:        { contains: q, mode: "insensitive" } },
+            { awayTeam:        { contains: q, mode: "insensitive" } },
+            { competitionName: { contains: q, mode: "insensitive" } },
+            { venue:           { contains: q, mode: "insensitive" } },
+            { homeHeadCoach:   { contains: q, mode: "insensitive" } },
+            { awayHeadCoach:   { contains: q, mode: "insensitive" } },
           ],
         }),
         date: {

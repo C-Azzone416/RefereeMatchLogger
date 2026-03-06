@@ -133,7 +133,7 @@ export default async function MatchDetailPage({
                   </div>
                   <div className="space-y-2">
                     {events.map((ev) => {
-                      const detail = ev.detail ? JSON.parse(ev.detail) : {};
+                      const detail = (ev.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean };
                       const team = ev.team === "home" ? match.homeTeam : match.awayTeam;
                       const player = ev.playerNumber ? `#${ev.playerNumber} ${ev.playerName || ""}` : ev.playerName || "";
                       return (

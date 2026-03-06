@@ -185,7 +185,7 @@ export default async function MatchReportPage({
                     <table className="w-full text-sm border-collapse">
                       <tbody>
                         {events.map((ev) => {
-                          const detail = ev.detail ? JSON.parse(ev.detail) : {};
+                          const detail = ev.detail ? (ev.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } : {};
                           const team = ev.team === "home" ? match.homeTeam : match.awayTeam;
                           const player = [ev.playerNumber ? `#${ev.playerNumber}` : null, ev.playerName].filter(Boolean).join(" ");
 
@@ -245,7 +245,7 @@ export default async function MatchReportPage({
                     ) : (
                       <ul className="space-y-1">
                         {yellowCards.map((e) => {
-                          const detail = e.detail ? JSON.parse(e.detail) : {};
+                          const detail = e.detail ? (e.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } : {};
                           const team = e.team === "home" ? match.homeTeam : match.awayTeam;
                           return (
                             <li key={e.id} className="text-gray-700">
@@ -264,7 +264,7 @@ export default async function MatchReportPage({
                     ) : (
                       <ul className="space-y-1">
                         {redCards.map((e) => {
-                          const detail = e.detail ? JSON.parse(e.detail) : {};
+                          const detail = e.detail ? (e.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } : {};
                           const team = e.team === "home" ? match.homeTeam : match.awayTeam;
                           return (
                             <li key={e.id} className="text-gray-700">
@@ -290,7 +290,7 @@ export default async function MatchReportPage({
                 <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
                   {["home", "away"].map((side) => {
                     const teamGoals = goals.filter((g) => {
-                      const detail = g.detail ? JSON.parse(g.detail) : {};
+                      const detail = g.detail ? (g.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } : {};
                       const scored = detail.ownGoal ? g.team !== side : g.team === side;
                       return scored;
                     });
@@ -303,7 +303,7 @@ export default async function MatchReportPage({
                         ) : (
                           <ul className="space-y-0.5">
                             {teamGoals.map((g) => {
-                              const detail = g.detail ? JSON.parse(g.detail) : {};
+                              const detail = g.detail ? (g.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } : {};
                               return (
                                 <li key={g.id} className="text-gray-700">
                                   {minuteLabel(g)}{g.playerName ? ` ${g.playerName}` : ""}
@@ -336,7 +336,7 @@ export default async function MatchReportPage({
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Injuries</p>
                     <ul className="space-y-1 text-sm text-gray-700">
                       {injuries.map((e) => {
-                        const detail = e.detail ? JSON.parse(e.detail) : {};
+                        const detail = e.detail ? (e.detail ?? {}) as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } : {};
                         const team = e.team === "home" ? match.homeTeam : match.awayTeam;
                         return (
                           <li key={e.id}>
