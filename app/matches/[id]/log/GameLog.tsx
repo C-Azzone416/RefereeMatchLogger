@@ -83,7 +83,10 @@ function eventSummary(e: GameEvent, homeTeam: string, awayTeam: string) {
     }
     case "yellow_card": return `${team} — ${player}${detail.reason ? ` (${detail.reason})` : ""}`;
     case "red_card":    return `${team} — ${player}${detail.reason ? ` (${detail.reason})` : ""}`;
-    case "substitution": return `${team} — Off: ${player} / On: ${detail.subOnName || ""}`;
+    case "substitution": {
+      const onStr = [detail.subOnNumber ? `#${detail.subOnNumber}` : null, detail.subOnName || null].filter(Boolean).join(" ") || "Unknown";
+      return `${team} — Off: ${player || "Unknown"} / On: ${onStr}`;
+    }
     case "injury": return `${team} — ${player}`;
     case "note":   return detail.description || "";
     default:       return "";
@@ -117,6 +120,7 @@ export default function GameLog({ match }: { match: Match }) {
   const [homeScore, setHomeScore] = useState(match.homeScore);
   const [awayScore, setAwayScore] = useState(match.awayScore);
 
+  const [viewPeriod, setViewPeriod]   = useState<string>("all");
   const [showForm, setShowForm]       = useState(false);
   const [confirming, setConfirming]   = useState(false); // second-yellow review step
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -287,12 +291,20 @@ export default function GameLog({ match }: { match: Match }) {
 
       {/* Period selector */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex gap-2 overflow-x-auto">
+        <button
+          onClick={() => setViewPeriod("all")}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+            viewPeriod === "all" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          All
+        </button>
         {availablePeriods.map((p) => (
           <button
             key={p}
-            onClick={() => setPeriod(p)}
+            onClick={() => setViewPeriod(p)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              period === p ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600"
+              viewPeriod === p ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600"
             }`}
           >
             {PERIOD_LABELS[p]}
@@ -302,12 +314,15 @@ export default function GameLog({ match }: { match: Match }) {
 
       {/* Event log */}
       <div className="px-4 py-4 space-y-2">
-        {events.length === 0 && (
+        {events.filter((e) => viewPeriod === "all" || e.period === viewPeriod).length === 0 && (
           <div className="text-center text-gray-400 py-8 text-sm">
-            No events yet. Tap an event button below to start logging.
+            {viewPeriod === "all"
+              ? "No events yet. Tap an event button below to start logging."
+              : `No events in ${PERIOD_LABELS[viewPeriod]}.`}
           </div>
         )}
         {events
+          .filter((e) => viewPeriod === "all" || e.period === viewPeriod)
           .slice()
           .sort((a, b) => {
             const po = PERIODS.indexOf(a.period) - PERIODS.indexOf(b.period);
@@ -501,25 +516,30 @@ export default function GameLog({ match }: { match: Match }) {
 
                 {/* Player */}
                 {selectedType !== "note" && (
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <label className="label">#</label>
-                      <input
-                        className="input text-center"
-                        value={playerNumber}
-                        onChange={(e) => setPlayerNumber(e.target.value)}
-                        placeholder="7"
-                        inputMode="numeric"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="label">Player Name</label>
-                      <input
-                        className="input"
-                        value={playerName}
-                        onChange={(e) => setPlayerName(e.target.value)}
-                        placeholder="Last name"
-                      />
+                  <div>
+                    {selectedType === "substitution" && (
+                      <div className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1.5">Player Coming Off</div>
+                    )}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="label">#</label>
+                        <input
+                          className="input text-center"
+                          value={playerNumber}
+                          onChange={(e) => setPlayerNumber(e.target.value)}
+                          placeholder="7"
+                          inputMode="numeric"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="label">Player Name</label>
+                        <input
+                          className="input"
+                          value={playerName}
+                          onChange={(e) => setPlayerName(e.target.value)}
+                          placeholder="Last name"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -618,13 +638,28 @@ export default function GameLog({ match }: { match: Match }) {
                 {/* Substitution fields */}
                 {selectedType === "substitution" && (
                   <div>
-                    <label className="label">Player Coming On</label>
-                    <input
-                      className="input"
-                      value={(detail.subOnName as string) || ""}
-                      onChange={(e) => setDetail((d) => ({ ...d, subOnName: e.target.value }))}
-                      placeholder="Name of player entering"
-                    />
+                    <div className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1.5">Player Coming On</div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="label">#</label>
+                        <input
+                          className="input text-center"
+                          value={(detail.subOnNumber as string) || ""}
+                          onChange={(e) => setDetail((d) => ({ ...d, subOnNumber: e.target.value }))}
+                          placeholder="11"
+                          inputMode="numeric"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="label">Player Name</label>
+                        <input
+                          className="input"
+                          value={(detail.subOnName as string) || ""}
+                          onChange={(e) => setDetail((d) => ({ ...d, subOnName: e.target.value }))}
+                          placeholder="Last name"
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
 
