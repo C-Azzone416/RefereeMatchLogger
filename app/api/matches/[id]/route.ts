@@ -13,12 +13,21 @@ export async function GET(
     const { id } = await params;
     const match = await db.match.findFirst({
       where: { id, userId: session.userId },
-      include: { events: { orderBy: { createdAt: "asc" } }, players: true },
+      include: {
+        events: { orderBy: { createdAt: "asc" } },
+        players: true,
+        supplementalReports: {
+          select: { id: true, incidentType: true, status: true, offenseCode: true, playerName: true, playerNumber: true, minute: true },
+          orderBy: { createdAt: "asc" },
+        },
+      },
     });
 
     if (!match) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    return NextResponse.json(match);
+    const pendingSupplementals = match.supplementalReports.filter((r) => r.status === "draft").length;
+
+    return NextResponse.json({ ...match, pendingSupplementals });
   } catch (err) {
     console.error("GET /api/matches/[id]:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -42,13 +51,15 @@ export async function PATCH(
     const updated = await db.match.update({
       where: { id },
       data: {
-        ...(body.homeScore !== undefined && { homeScore: Number(body.homeScore) }),
-        ...(body.awayScore !== undefined && { awayScore: Number(body.awayScore) }),
-        ...(body.halfTimeHomeScore !== undefined && { halfTimeHomeScore: Number(body.halfTimeHomeScore) }),
-        ...(body.halfTimeAwayScore !== undefined && { halfTimeAwayScore: Number(body.halfTimeAwayScore) }),
-        ...(body.narrative !== undefined && { narrative: body.narrative }),
-        ...(body.matchAbandoned !== undefined && { matchAbandoned: body.matchAbandoned }),
-        ...(body.abandonReason !== undefined && { abandonReason: body.abandonReason }),
+        ...(body.homeScore          !== undefined && { homeScore: Number(body.homeScore) }),
+        ...(body.awayScore          !== undefined && { awayScore: Number(body.awayScore) }),
+        ...(body.halfTimeHomeScore  !== undefined && { halfTimeHomeScore: Number(body.halfTimeHomeScore) }),
+        ...(body.halfTimeAwayScore  !== undefined && { halfTimeAwayScore: Number(body.halfTimeAwayScore) }),
+        ...(body.narrative          !== undefined && { narrative: body.narrative }),
+        ...(body.matchAbandoned     !== undefined && { matchAbandoned: body.matchAbandoned }),
+        ...(body.abandonReason      !== undefined && { abandonReason: body.abandonReason }),
+        ...(body.extraTime          !== undefined && { extraTime: body.extraTime }),
+        ...(body.penalties          !== undefined && { penalties: body.penalties }),
       },
     });
 

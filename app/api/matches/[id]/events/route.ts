@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { offenseCodeToDetailType } from "@/lib/supplementalTypes";
 
 export async function POST(
   req: NextRequest,
@@ -28,6 +29,8 @@ export async function POST(
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const parsedDetail = detail && typeof detail === "object" ? detail : null;
+
     const event = await db.gameEvent.create({
       data: {
         matchId: id,
@@ -38,11 +41,43 @@ export async function POST(
         team,
         playerName: playerName || null,
         playerNumber: playerNumber || null,
-        detail: detail ? JSON.stringify(detail) : null,
+        detail: parsedDetail ? JSON.stringify(parsedDetail) : null,
       },
     });
 
-    return NextResponse.json(event);
+    // Auto-create a draft supplemental report for every red card
+    let supplemental = null;
+    if (eventType === "red_card") {
+      const offenseCode = parsedDetail?.reason as string | undefined;
+      const isSecondCaution = parsedDetail?.reason === "Second caution";
+
+      supplemental = await db.supplementalReport.create({
+        data: {
+          matchId: id,
+          gameEventId: event.id,
+          incidentType: "send_off",
+          team,
+          playerName: playerName || null,
+          playerNumber: playerNumber || null,
+          minute: Number(minute),
+          stoppageTime: stoppageTime ? Number(stoppageTime) : null,
+          period,
+          offenseCode: offenseCode || null,
+          status: "draft",
+          // Pre-populate second caution details if applicable
+          details: isSecondCaution
+            ? JSON.stringify({
+                secondCautionReason: offenseCode,
+                // firstCaution fields to be completed by referee
+              })
+            : offenseCode
+            ? JSON.stringify({ detailType: offenseCodeToDetailType(offenseCode) })
+            : null,
+        },
+      });
+    }
+
+    return NextResponse.json({ event, supplemental }, { status: 201 });
   } catch (err) {
     console.error("POST /api/matches/[id]/events:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -70,6 +105,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
+    // Cascade in schema handles deleting linked supplemental report
     await db.gameEvent.delete({ where: { id: eventId } });
 
     return NextResponse.json({ ok: true });

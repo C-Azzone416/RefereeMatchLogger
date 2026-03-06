@@ -36,7 +36,7 @@ model Match {
   competitionLevel  String    // "Recreational", "Competitive", "State Cup", "Regional", "National"
   homeTeam          String
   awayTeam          String
-  homeJerseyColor   String?   // e.g. "Red", "White"
+  homeJerseyColor   String?
   awayJerseyColor   String?
 
   // Result
@@ -49,7 +49,7 @@ model Match {
 
   // Official's role
   role              String    // "Center", "AR1", "AR2"
-  centerRefName     String?   // populated when role is AR1/AR2
+  centerRefName     String?
   centerRefBadge    String?
 
   // Post-match notes
@@ -60,8 +60,9 @@ model Match {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  events            GameEvent[]
-  players           Player[]
+  events              GameEvent[]
+  players             Player[]
+  supplementalReports SupplementalReport[]
 }
 
 model GameEvent {
@@ -72,16 +73,65 @@ model GameEvent {
   eventType     String   // "goal", "yellow_card", "red_card", "substitution", "injury", "note"
   period        String   // "1", "2", "et1", "et2", "penalties"
   minute        Int
-  stoppageTime  Int?     // additional minutes e.g. 45+3 → minute=45, stoppageTime=3
+  stoppageTime  Int?
   team          String   // "home", "away"
 
   playerName    String?
   playerNumber  String?
 
-  // Type-specific details (stored as JSON string for SQLite compatibility)
-  detail        String?  // JSON: { offenseCode, description, secondYellow, ownGoal, penalty, assistName, subOnName }
+  // Type-specific details (JSON string for SQLite compatibility)
+  detail        String?
 
   createdAt     DateTime @default(now())
+
+  supplementalReport SupplementalReport?
+}
+
+model SupplementalReport {
+  id          String   @id @default(cuid())
+  matchId     String
+  match       Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  // Linked to the specific triggering event (red card, etc.) — optional for non-event incidents
+  gameEventId String?  @unique
+  gameEvent   GameEvent? @relation(fields: [gameEventId], references: [id], onDelete: SetNull)
+
+  // Incident classification
+  // send_off | coach_dismissal | referee_abuse | referee_assault | serious_injury | abandonment | other
+  incidentType  String
+
+  // Who — auto-populated from the linked event where applicable
+  team          String?   // "home", "away"
+  playerName    String?
+  playerNumber  String?
+  officialName  String?   // for coach/team official dismissals
+  officialRole  String?   // "Head Coach", "Assistant Coach", "Team Manager", "Other"
+
+  // When / where
+  minute        Int?
+  stoppageTime  Int?
+  period        String?
+  fieldLocation String?   // free text: "attacking penalty area", "center circle", etc.
+
+  // Offense code — mirrors the red card reason
+  offenseCode   String?
+
+  // Main narrative (plain language, facts only, Laws of the Game terminology)
+  narrative     String?
+
+  // Offense-specific structured data (JSON string)
+  // Schema varies by incidentType — see lib/supplementalDetails.ts for shape per type
+  details       String?
+
+  // Submission tracking
+  // draft | complete | submitted
+  status        String    @default("draft")
+  submittedAt   DateTime?
+  // Comma-separated list of destinations: "WYS", "WPL", "WASA", "email", "other"
+  submittedTo   String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Player {
