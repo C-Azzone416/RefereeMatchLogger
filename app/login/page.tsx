@@ -35,14 +35,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-gray-50">
+    <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-brand-800 pitch-bg">
       <div className="mb-8 text-center">
-        <div className="text-4xl mb-2">⚽</div>
-        <h1 className="text-2xl font-bold text-gray-900">RefereeMatchTracker</h1>
-        <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
+        <div className="text-5xl mb-3">⚽</div>
+        <h1 className="text-3xl font-black text-white tracking-tight">RefereeMatchTracker</h1>
+        <p className="text-brand-300 text-sm mt-1">Sign in to your account</p>
       </div>
 
-      <div className="card max-w-sm mx-auto w-full">
+      <div className="card max-w-sm mx-auto w-full shadow-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="label" htmlFor="email">Email</label>

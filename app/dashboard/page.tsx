@@ -29,46 +29,46 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-brand-600 text-white px-4 py-4 flex items-center justify-between">
+      <header className="bg-brand-800 text-white px-4 py-4 flex items-center justify-between pitch-bg">
         <div>
-          <h1 className="font-bold text-lg">RefereeMatchTracker</h1>
-          <p className="text-brand-100 text-xs">{session.userName}</p>
+          <h1 className="font-black text-xl tracking-tight">RefereeMatchTracker</h1>
+          <p className="text-brand-300 text-xs mt-0.5">{session.userName}</p>
         </div>
-        <Link href="/profile" className="text-brand-100 text-sm">Profile</Link>
+        <Link href="/profile" className="text-brand-200 text-sm font-medium">Profile</Link>
       </header>
 
       <div className="px-4 py-6 space-y-6 max-w-lg mx-auto">
         {/* Quick action */}
-        <Link href="/matches/new" className="btn-primary w-full text-center block text-lg py-4">
+        <Link href="/matches/new" className="btn-primary w-full text-center block text-base py-4">
           + Log New Match
         </Link>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="card text-center">
-            <div className="text-2xl font-bold text-brand-600">{allMatches.length}</div>
-            <div className="text-xs text-gray-500 mt-1">Total Matches</div>
+          <div className="bg-brand-800 rounded-xl p-4 text-center text-white pitch-bg">
+            <div className="text-3xl font-black tabular-nums">{allMatches.length}</div>
+            <div className="text-[10px] text-brand-300 uppercase tracking-widest mt-1">Total</div>
           </div>
-          <div className="card text-center">
-            <div className="text-2xl font-bold text-brand-600">{centerCount}</div>
-            <div className="text-xs text-gray-500 mt-1">As Center</div>
+          <div className="bg-brand-800 rounded-xl p-4 text-center text-white pitch-bg">
+            <div className="text-3xl font-black tabular-nums">{centerCount}</div>
+            <div className="text-[10px] text-brand-300 uppercase tracking-widest mt-1">Center</div>
           </div>
-          <div className="card text-center">
-            <div className="text-2xl font-bold text-brand-600">{arCount}</div>
-            <div className="text-xs text-gray-500 mt-1">As AR</div>
+          <div className="bg-brand-800 rounded-xl p-4 text-center text-white pitch-bg">
+            <div className="text-3xl font-black tabular-nums">{arCount}</div>
+            <div className="text-[10px] text-brand-300 uppercase tracking-widest mt-1">As AR</div>
           </div>
         </div>
 
-        <div className="card text-center">
-          <div className="text-xl font-bold text-gray-700">{recentCount}</div>
-          <div className="text-xs text-gray-500 mt-1">Matches in Last 90 Days</div>
+        <div className="bg-gray-800 rounded-xl p-4 text-center text-white">
+          <div className="text-2xl font-black tabular-nums">{recentCount}</div>
+          <div className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Last 90 Days</div>
         </div>
 
         {/* Recent matches */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold text-gray-900">Recent Matches</h2>
-            <Link href="/matches" className="text-brand-600 text-sm">View all</Link>
+            <h2 className="font-black text-gray-900 uppercase tracking-wide text-sm">Recent Matches</h2>
+            <Link href="/matches" className="text-brand-600 text-sm font-medium">View all →</Link>
           </div>
 
           {matches.length === 0 ? (
@@ -79,21 +79,15 @@ export default async function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {matches.map((match) => (
-                <Link key={match.id} href={`/matches/${match.id}`} className="card flex items-center justify-between active:bg-gray-50">
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {match.homeTeam} vs {match.awayTeam}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {format(new Date(match.date), "MMM d, yyyy")} · {match.ageGroup} {match.gender}
-                    </div>
-                    <div className="text-xs text-gray-400 mt-0.5">
-                      {match.role} · {match.competitionLevel}
-                    </div>
+                <Link key={match.id} href={`/matches/${match.id}`} className="card block active:bg-gray-50">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="font-bold text-gray-900 flex-1 truncate text-sm">{match.homeTeam}</span>
+                    <span className="font-black text-brand-700 tabular-nums text-xl px-2 shrink-0">{match.homeScore}–{match.awayScore}</span>
+                    <span className="font-bold text-gray-900 flex-1 text-right truncate text-sm">{match.awayTeam}</span>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-gray-900">{match.homeScore}–{match.awayScore}</div>
-                    <div className="text-xs text-gray-400">{match.competitionName}</div>
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span>{format(new Date(match.date), "MMM d, yyyy")} · {match.ageGroup} {match.gender}</span>
+                    <span className="bg-gray-100 rounded px-1.5 py-0.5 font-medium text-gray-500">{match.role}</span>
                   </div>
                 </Link>
               ))}

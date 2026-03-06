@@ -65,9 +65,9 @@ export default function NewMatchPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-brand-600 text-white px-4 py-4 flex items-center gap-3">
-        <Link href="/dashboard" className="text-brand-100">← Back</Link>
-        <h1 className="font-bold text-lg">New Match</h1>
+      <header className="bg-brand-800 text-white px-4 py-4 flex items-center gap-3 pitch-bg">
+        <Link href="/dashboard" className="text-brand-300">← Back</Link>
+        <h1 className="font-black text-lg tracking-tight">New Match</h1>
       </header>
 
       <form onSubmit={handleSubmit} className="px-4 py-6 space-y-5 max-w-lg mx-auto">
