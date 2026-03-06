@@ -14,6 +14,7 @@ prisma/dev.db-journal
 prisma/*.db
 
 # Environment
+.env
 .env.local
 .env*.local
 
@@ -25,3 +26,4 @@ dist/
 
 # OS
 .DS_Store
+.clubhouse/plugin-data-local/

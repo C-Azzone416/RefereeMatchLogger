@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { offenseCodeToDetailType } from "@/lib/supplementalTypes";
 
 export async function POST(
@@ -41,7 +42,7 @@ export async function POST(
         team,
         playerName: playerName || null,
         playerNumber: playerNumber || null,
-        detail: parsedDetail ? JSON.stringify(parsedDetail) : null,
+        detail: parsedDetail ?? null,
       },
     });
 
@@ -66,13 +67,10 @@ export async function POST(
           status: "draft",
           // Pre-populate second caution details if applicable
           details: isSecondCaution
-            ? JSON.stringify({
-                secondCautionReason: offenseCode,
-                // firstCaution fields to be completed by referee
-              })
+            ? { secondCautionReason: offenseCode }
             : offenseCode
-            ? JSON.stringify({ detailType: offenseCodeToDetailType(offenseCode) })
-            : null,
+            ? { detailType: offenseCodeToDetailType(offenseCode) }
+            : Prisma.DbNull,
         },
       });
     }

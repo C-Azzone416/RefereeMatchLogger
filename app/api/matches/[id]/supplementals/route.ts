@@ -102,7 +102,7 @@ export async function POST(
         fieldLocation: fieldLocation || null,
         offenseCode: offenseCode || null,
         narrative: narrative || null,
-        details: details ? JSON.stringify(details) : null,
+        details: details ?? null,
         status: "draft",
       },
       include: { gameEvent: true },

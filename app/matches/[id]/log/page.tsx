@@ -27,6 +27,7 @@ export default async function GameLogPage({
     events: match.events.map((e) => ({
       ...e,
       createdAt: e.createdAt.toISOString(),
+      detail: e.detail as { reason?: string; description?: string; penalty?: boolean; ownGoal?: boolean; assistName?: string; subOnName?: string; subOnNumber?: string; secondYellow?: boolean } | null,
     })),
   };
 

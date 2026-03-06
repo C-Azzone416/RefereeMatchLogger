@@ -85,7 +85,7 @@ export async function PATCH(
         ...(body.fieldLocation  !== undefined && { fieldLocation: body.fieldLocation || null }),
         ...(body.offenseCode    !== undefined && { offenseCode: body.offenseCode || null }),
         ...(body.narrative      !== undefined && { narrative: body.narrative || null }),
-        ...(body.details        !== undefined && { details: body.details ? JSON.stringify(body.details) : null }),
+        ...(body.details        !== undefined && { details: body.details ?? null }),
         ...(body.status         !== undefined && { status: body.status }),
         ...(body.submittedTo    !== undefined && { submittedTo: body.submittedTo || null }),
         // Set submittedAt when transitioning to submitted (status = "complete" + submittedTo set)
