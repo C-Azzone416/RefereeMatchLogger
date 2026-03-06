@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  badgeNumber   String?
+  currentGrade  String?  // e.g. "Grassroots", "Grade 8", "Grade 7"
+  state         String?  // US state association
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  matches       Match[]
+}
+
+model Match {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+
+  // Match identity
+  date              DateTime
+  venue             String
+  field             String?
+  competitionName   String
+  ageGroup          String    // e.g. "U14", "U16", "Adult"
+  gender            String    // "Boys", "Girls", "Men", "Women", "Coed"
+  competitionLevel  String    // "Recreational", "Competitive", "State Cup", "Regional", "National"
+  homeTeam          String
+  awayTeam          String
+  homeJerseyColor   String?   // e.g. "Red", "White"
+  awayJerseyColor   String?
+
+  // Result
+  homeScore         Int       @default(0)
+  awayScore         Int       @default(0)
+  halfTimeHomeScore Int?
+  halfTimeAwayScore Int?
+  extraTime         Boolean   @default(false)
+  penalties         Boolean   @default(false)
+
+  // Official's role
+  role              String    // "Center", "AR1", "AR2"
+  centerRefName     String?   // populated when role is AR1/AR2
+  centerRefBadge    String?
+
+  // Post-match notes
+  narrative         String?
+  matchAbandoned    Boolean   @default(false)
+  abandonReason     String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  events            GameEvent[]
+  players           Player[]
+}
+
+model GameEvent {
+  id            String   @id @default(cuid())
+  matchId       String
+  match         Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  eventType     String   // "goal", "yellow_card", "red_card", "substitution", "injury", "note"
+  period        String   // "1", "2", "et1", "et2", "penalties"
+  minute        Int
+  stoppageTime  Int?     // additional minutes e.g. 45+3 → minute=45, stoppageTime=3
+  team          String   // "home", "away"
+
+  playerName    String?
+  playerNumber  String?
+
+  // Type-specific details (stored as JSON string for SQLite compatibility)
+  detail        String?  // JSON: { offenseCode, description, secondYellow, ownGoal, penalty, assistName, subOnName }
+
+  createdAt     DateTime @default(now())
+}
+
+model Player {
+  id           String  @id @default(cuid())
+  matchId      String
+  match        Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  team         String  // "home", "away"
+  name         String
+  number       String
+  isStarter    Boolean @default(true)
+}

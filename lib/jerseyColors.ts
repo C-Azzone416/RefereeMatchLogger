@@ -1,0 +1,16 @@
+export const JERSEY_COLOR_MAP: Record<string, string> = {
+  "White":      "#FFFFFF",
+  "Black":      "#1a1a1a",
+  "Red":        "#DC2626",
+  "Navy":       "#1E3A5F",
+  "Royal Blue": "#2563EB",
+  "Sky Blue":   "#38BDF8",
+  "Green":      "#16A34A",
+  "Yellow":     "#EAB308",
+  "Orange":     "#EA580C",
+  "Purple":     "#7C3AED",
+  "Maroon":     "#7F1D1D",
+  "Pink":       "#EC4899",
+  "Gray":       "#6B7280",
+  "Gold":       "#D97706",
+};
