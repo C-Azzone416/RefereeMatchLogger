@@ -132,35 +132,6 @@ export default function NewMatchPage() {
             <label className="label">Field # (optional)</label>
             <input className="input" value={form.field} onChange={(e) => set("field", e.target.value)} placeholder="e.g. Field 3" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="label">Minutes per Half</label>
-              <select className="input" value={halfLength} onChange={(e) => setHalfLength(Number(e.target.value))}>
-                {[20, 25, 30, 35, 40, 45].map((n) => (
-                  <option key={n} value={n}>{n} min</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label">Overtime / Shootout</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOvertimePossible(false)}
-                  className={`py-3 rounded-lg text-sm font-medium border transition-colors ${!overtimePossible ? "bg-brand-600 text-white border-brand-600" : "bg-white text-gray-700 border-gray-300"}`}
-                >
-                  No
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOvertimePossible(true)}
-                  className={`py-3 rounded-lg text-sm font-medium border transition-colors ${overtimePossible ? "bg-brand-600 text-white border-brand-600" : "bg-white text-gray-700 border-gray-300"}`}
-                >
-                  Yes
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Competition */}
@@ -189,6 +160,35 @@ export default function NewMatchPage() {
             <select className="input" value={form.competitionLevel} onChange={(e) => set("competitionLevel", e.target.value)}>
               {LEVELS.map((l) => <option key={l}>{l}</option>)}
             </select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Minutes per Half</label>
+              <select className="input" value={halfLength} onChange={(e) => setHalfLength(Number(e.target.value))}>
+                {[20, 25, 30, 35, 40, 45].map((n) => (
+                  <option key={n} value={n}>{n} min</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label">Overtime / Shootout</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOvertimePossible(false)}
+                  className={`py-3 rounded-lg text-sm font-medium border transition-colors ${!overtimePossible ? "bg-brand-600 text-white border-brand-600" : "bg-white text-gray-700 border-gray-300"}`}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOvertimePossible(true)}
+                  className={`py-3 rounded-lg text-sm font-medium border transition-colors ${overtimePossible ? "bg-brand-600 text-white border-brand-600" : "bg-white text-gray-700 border-gray-300"}`}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
