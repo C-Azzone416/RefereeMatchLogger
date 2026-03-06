@@ -77,7 +77,9 @@ export async function POST(
       });
     }
 
-    return NextResponse.json({ event, supplemental }, { status: 201 });
+    // Spread event fields at the top level so clients expecting a bare GameEvent
+    // still work; supplemental is included as an extra field for clients that need it.
+    return NextResponse.json({ ...event, supplemental }, { status: 201 });
   } catch (err) {
     console.error("POST /api/matches/[id]/events:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

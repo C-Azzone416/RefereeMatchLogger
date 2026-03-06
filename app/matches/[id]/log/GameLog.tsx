@@ -95,7 +95,10 @@ async function postEvent(matchId: string, payload: object): Promise<GameEvent | 
     body: JSON.stringify(payload),
   });
   if (!res.ok) return null;
-  return res.json();
+  const data = await res.json();
+  // The events API returns { ...event, supplemental } — extract just the GameEvent fields
+  const { supplemental: _supplemental, ...event } = data;
+  return event as GameEvent;
 }
 
 export default function GameLog({ match }: { match: Match }) {
@@ -297,10 +300,10 @@ export default function GameLog({ match }: { match: Match }) {
             const po = PERIODS.indexOf(a.period) - PERIODS.indexOf(b.period);
             return po !== 0 ? po : a.minute - b.minute;
           })
-          .map((ev) => {
+          .map((ev, i) => {
             const typeInfo = EVENT_TYPES.find((t) => t.type === ev.eventType);
             return (
-              <div key={ev.id} className="card flex items-start gap-3">
+              <div key={ev.id ?? `ev-${i}`} className="card flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 text-center">
                   <div className="text-xl">{typeInfo?.emoji}</div>
                   <div className="text-xs text-gray-400 font-mono">{minuteLabel(ev)}</div>

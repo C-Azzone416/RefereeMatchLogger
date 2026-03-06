@@ -38,6 +38,8 @@ model Match {
   awayTeam          String
   homeJerseyColor   String?
   awayJerseyColor   String?
+  homeHeadCoach     String?
+  awayHeadCoach     String?
 
   // Result
   homeScore         Int       @default(0)
