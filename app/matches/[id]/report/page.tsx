@@ -14,7 +14,7 @@ const PERIOD_LABELS: Record<string, string> = {
   "penalties": "Penalty Shootout",
 };
 
-const PERIODS = ["1", "2", "et1", "et2", "penalties"];
+const ALL_PERIODS = ["1", "2", "et1", "et2", "penalties"];
 
 function minuteLabel(e: { minute: number; stoppageTime: number | null }) {
   return e.stoppageTime ? `${e.minute}+${e.stoppageTime}'` : `${e.minute}'`;
@@ -69,6 +69,7 @@ export default async function MatchReportPage({
   const injuries = match.events.filter((e) => e.eventType === "injury");
   const notes = match.events.filter((e) => e.eventType === "note");
 
+  const PERIODS = match.overtimePossible ? ALL_PERIODS : ALL_PERIODS.slice(0, 2);
   const eventsByPeriod = PERIODS.map((p) => ({
     period: p,
     label: PERIOD_LABELS[p],
@@ -126,8 +127,8 @@ export default async function MatchReportPage({
                     Half-time: {match.halfTimeHomeScore}–{match.halfTimeAwayScore}
                   </div>
                 )}
-                {match.extraTime && <div className="text-xs text-gray-500">After extra time</div>}
-                {match.penalties && <div className="text-xs text-gray-500">After penalties</div>}
+                {match.overtimePossible && match.extraTime && <div className="text-xs text-gray-500">After extra time</div>}
+                {match.overtimePossible && match.penalties && <div className="text-xs text-gray-500">After penalties</div>}
               </div>
               <div className="text-center">
                 <div className="font-bold text-lg">{match.awayTeam}</div>

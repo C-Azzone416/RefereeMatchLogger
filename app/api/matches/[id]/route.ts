@@ -57,6 +57,8 @@ export async function PATCH(
         ...(body.halfTimeAwayScore  !== undefined && { halfTimeAwayScore: Number(body.halfTimeAwayScore) }),
         ...(body.homeHeadCoach      !== undefined && { homeHeadCoach: body.homeHeadCoach || null }),
         ...(body.awayHeadCoach      !== undefined && { awayHeadCoach: body.awayHeadCoach || null }),
+        ...(body.halfLength          !== undefined && { halfLength: Number(body.halfLength) }),
+        ...(body.overtimePossible   !== undefined && { overtimePossible: Boolean(body.overtimePossible) }),
         ...(body.narrative          !== undefined && { narrative: body.narrative }),
         ...(body.matchAbandoned     !== undefined && { matchAbandoned: body.matchAbandoned }),
         ...(body.abandonReason      !== undefined && { abandonReason: body.abandonReason }),

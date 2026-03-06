@@ -50,7 +50,9 @@ export default async function MatchDetailPage({
 
   if (!match) redirect("/dashboard");
 
-  const PERIODS = ["1", "2", "et1", "et2", "penalties"];
+  const PERIODS = match.overtimePossible
+    ? ["1", "2", "et1", "et2", "penalties"]
+    : ["1", "2"];
   const eventsByPeriod = PERIODS.map((p) => ({
     period: p,
     events: match.events.filter((e) => e.period === p),

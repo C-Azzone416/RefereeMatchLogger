@@ -40,6 +40,8 @@ model Match {
   awayJerseyColor   String?
   homeHeadCoach     String?
   awayHeadCoach     String?
+  halfLength        Int       @default(45)  // minutes per half, e.g. 25/30/35/40/45
+  overtimePossible  Boolean   @default(false) // if false, hide ET/PK periods and fields
 
   // Result
   homeScore         Int       @default(0)

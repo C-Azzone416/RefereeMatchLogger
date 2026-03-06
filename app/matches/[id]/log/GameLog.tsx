@@ -27,6 +27,8 @@ type Match = {
   gender: string;
   competitionName: string;
   competitionLevel: string;
+  halfLength: number;
+  overtimePossible: boolean;
   events: GameEvent[];
 };
 
@@ -88,6 +90,15 @@ function eventSummary(e: GameEvent, homeTeam: string, awayTeam: string) {
   }
 }
 
+function detectPeriod(minute: number, halfLength: number, overtimePossible: boolean): string {
+  if (minute <= halfLength) return "1";
+  if (minute <= halfLength * 2) return "2";
+  if (!overtimePossible) return "2";
+  if (minute <= halfLength * 2 + 15) return "et1";
+  if (minute <= halfLength * 2 + 30) return "et2";
+  return "penalties";
+}
+
 async function postEvent(matchId: string, payload: object): Promise<GameEvent | null> {
   const res = await fetch(`/api/matches/${matchId}/events`, {
     method: "POST",
@@ -117,6 +128,8 @@ export default function GameLog({ match }: { match: Match }) {
   const [playerNumber, setPlayerNumber] = useState("");
   const [detail, setDetail]           = useState<Record<string, string | boolean>>({});
   const [saving, setSaving]           = useState(false);
+
+  const availablePeriods = match.overtimePossible ? PERIODS : PERIODS.slice(0, 2);
 
   // Find any prior yellow for same team + number
   const existingYellow =
@@ -274,7 +287,7 @@ export default function GameLog({ match }: { match: Match }) {
 
       {/* Period selector */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex gap-2 overflow-x-auto">
-        {PERIODS.map((p) => (
+        {availablePeriods.map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
@@ -463,7 +476,11 @@ export default function GameLog({ match }: { match: Match }) {
                       min={1}
                       max={120}
                       value={minute}
-                      onChange={(e) => setMinute(e.target.value)}
+                      onChange={(e) => {
+                        setMinute(e.target.value);
+                        const m = Number(e.target.value);
+                        if (m > 0) setPeriod(detectPeriod(m, match.halfLength, match.overtimePossible));
+                      }}
                       placeholder="45"
                       inputMode="numeric"
                     />
