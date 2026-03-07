@@ -94,6 +94,39 @@ export default function NewMatchPage() {
 
       {step === 1 && (
         <form onSubmit={handleNext} className="px-4 py-6 space-y-5 max-w-lg mx-auto">
+          {/* Your role */}
+          <div className="card space-y-3">
+            <h2 className="font-semibold text-gray-900">Your Role</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {ROLES.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => set("role", r)}
+                  className={`py-3 rounded-lg font-medium text-sm border transition-colors ${
+                    form.role === r
+                      ? "bg-brand-600 text-white border-brand-600"
+                      : "bg-white text-gray-700 border-gray-300"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+            {isAR && (
+              <div className="space-y-3 pt-1">
+                <div>
+                  <label className="label">Center Referee Name</label>
+                  <input className="input" value={form.centerRefName} onChange={(e) => set("centerRefName", e.target.value)} placeholder="Name" />
+                </div>
+                <div>
+                  <label className="label">Center Ref Badge # (optional)</label>
+                  <input className="input" value={form.centerRefBadge} onChange={(e) => set("centerRefBadge", e.target.value)} placeholder="Badge #" />
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Date, time, venue */}
           <div className="card space-y-3">
             <h2 className="font-semibold text-gray-900">Match Details</h2>
@@ -173,39 +206,6 @@ export default function NewMatchPage() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Your role */}
-          <div className="card space-y-3">
-            <h2 className="font-semibold text-gray-900">Your Role</h2>
-            <div className="grid grid-cols-3 gap-2">
-              {ROLES.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => set("role", r)}
-                  className={`py-3 rounded-lg font-medium text-sm border transition-colors ${
-                    form.role === r
-                      ? "bg-brand-600 text-white border-brand-600"
-                      : "bg-white text-gray-700 border-gray-300"
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-            {isAR && (
-              <div className="space-y-3 pt-1">
-                <div>
-                  <label className="label">Center Referee Name</label>
-                  <input className="input" value={form.centerRefName} onChange={(e) => set("centerRefName", e.target.value)} placeholder="Name" />
-                </div>
-                <div>
-                  <label className="label">Center Ref Badge # (optional)</label>
-                  <input className="input" value={form.centerRefBadge} onChange={(e) => set("centerRefBadge", e.target.value)} placeholder="Badge #" />
-                </div>
-              </div>
-            )}
           </div>
 
           <button type="submit" className="btn-primary w-full text-lg py-4">
