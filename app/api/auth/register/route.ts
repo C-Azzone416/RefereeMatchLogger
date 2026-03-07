@@ -25,7 +25,29 @@ export async function POST(req: NextRequest) {
 
   const existing = await db.user.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) {
-    return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
+    if (existing.emailVerified) {
+      return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
+    }
+
+    // Unverified account — treat as a resend, update password in case it changed
+    const passwordHash = await bcrypt.hash(password, 12);
+    const code = generateCode();
+    const expiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    await db.user.update({
+      where: { id: existing.id },
+      data: {
+        passwordHash,
+        emailVerificationCode: hashCode(code),
+        emailVerificationExpiry: expiry,
+        emailVerificationAttempts: 0,
+        emailVerificationSentAt: new Date(),
+      },
+    });
+
+    await sendVerificationEmail(email.toLowerCase(), code);
+
+    return NextResponse.json({ ok: true, emailVerified: false });
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
