@@ -127,7 +127,7 @@ export default function ProfileForm({ user }: { user: User }) {
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       <header className="bg-brand-800 text-white px-4 py-4 flex items-center gap-3 pitch-bg">
-        <Link href="/dashboard" className="text-brand-300">← Back</Link>
+        <Link href="/dashboard" className="text-brand-100">← Back</Link>
         <h1 className="font-black text-lg tracking-tight">Profile</h1>
       </header>
 

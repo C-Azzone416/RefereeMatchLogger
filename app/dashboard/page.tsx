@@ -32,7 +32,7 @@ export default async function DashboardPage() {
       <header className="bg-brand-800 text-white px-4 py-4 flex items-center justify-between pitch-bg">
         <div>
           <h1 className="font-black text-xl tracking-tight">RefereeMatchTracker</h1>
-          <p className="text-brand-300 text-xs mt-0.5">{session.userName}</p>
+          <p className="text-brand-100 text-xs mt-0.5">{session.userName}</p>
         </div>
         <Link href="/profile" className="text-brand-200 text-sm font-medium">Profile</Link>
       </header>
@@ -47,15 +47,15 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-brand-800 rounded-xl p-4 text-center text-white pitch-bg">
             <div className="text-3xl font-black tabular-nums">{allMatches.length}</div>
-            <div className="text-[10px] text-brand-300 uppercase tracking-widest mt-1">Total</div>
+            <div className="text-[10px] text-brand-100 uppercase tracking-widest mt-1">Total</div>
           </div>
           <div className="bg-brand-800 rounded-xl p-4 text-center text-white pitch-bg">
             <div className="text-3xl font-black tabular-nums">{centerCount}</div>
-            <div className="text-[10px] text-brand-300 uppercase tracking-widest mt-1">Center</div>
+            <div className="text-[10px] text-brand-100 uppercase tracking-widest mt-1">Center</div>
           </div>
           <div className="bg-brand-800 rounded-xl p-4 text-center text-white pitch-bg">
             <div className="text-3xl font-black tabular-nums">{arCount}</div>
-            <div className="text-[10px] text-brand-300 uppercase tracking-widest mt-1">As AR</div>
+            <div className="text-[10px] text-brand-100 uppercase tracking-widest mt-1">As AR</div>
           </div>
         </div>
 

@@ -35,9 +35,30 @@
       90deg,
       transparent 0,
       transparent 48px,
-      rgba(0, 0, 0, 0.06) 48px,
-      rgba(0, 0, 0, 0.06) 96px
+      rgba(0, 0, 0, 0.03) 48px,
+      rgba(0, 0, 0, 0.03) 96px
     );
+  }
+  .pitch-lines {
+    position: relative;
+    overflow: hidden;
+  }
+  .pitch-lines::before {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+  }
+  .pitch-lines::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
   }
 }
 

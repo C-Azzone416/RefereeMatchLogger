@@ -41,11 +41,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-brand-800 pitch-bg">
+    <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-brand-800 pitch-bg pitch-lines">
       <div className="mb-8 text-center">
         <div className="text-5xl mb-3">⚽</div>
         <h1 className="text-3xl font-black text-white tracking-tight">RefereeMatchTracker</h1>
-        <p className="text-brand-300 text-sm mt-1">Sign in to your account</p>
+        <p className="text-brand-100 text-sm mt-1">Sign in to your account</p>
       </div>
 
       <div className="card max-w-sm mx-auto w-full shadow-2xl">
