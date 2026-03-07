@@ -62,20 +62,20 @@ export default async function MatchDetailPage({
     <div className="min-h-screen bg-gray-50 pb-24">
       <header className="bg-brand-800 text-white px-4 pt-4 pb-6 pitch-bg">
         <div className="flex items-center gap-3 mb-4">
-          <Link href="/dashboard" className="text-brand-300 text-sm">← Dashboard</Link>
-          <span className="text-brand-300 text-[10px] ml-auto uppercase tracking-widest">{match.role}</span>
+          <Link href="/dashboard" className="text-brand-100 text-sm">← Dashboard</Link>
+          <span className="text-brand-100 text-[10px] ml-auto uppercase tracking-widest">{match.role}</span>
         </div>
         <div className="text-center">
-          <div className="text-[10px] text-brand-300 uppercase tracking-widest mb-3">{match.competitionName} · {match.ageGroup} {match.gender}</div>
+          <div className="text-[10px] text-brand-100 uppercase tracking-widest mb-3">{match.competitionName} · {match.ageGroup} {match.gender}</div>
           <div className="flex items-center justify-center gap-4 mb-3">
             <span className="font-black text-base flex-1 text-right leading-tight">{match.homeTeam}</span>
             <span className="text-5xl font-black tabular-nums shrink-0">{match.homeScore}–{match.awayScore}</span>
             <span className="font-black text-base flex-1 text-left leading-tight">{match.awayTeam}</span>
           </div>
-          <div className="text-brand-300 text-xs mt-2">
+          <div className="text-brand-100 text-xs mt-2">
             {format(new Date(match.date), "EEEE, MMMM d, yyyy · h:mm a")}
           </div>
-          <div className="text-brand-300 text-xs">{match.venue}{match.field ? ` · ${match.field}` : ""}</div>
+          <div className="text-brand-100 text-xs">{match.venue}{match.field ? ` · ${match.field}` : ""}</div>
         </div>
       </header>
 

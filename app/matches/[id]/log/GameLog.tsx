@@ -270,20 +270,20 @@ export default function GameLog({ match }: { match: Match }) {
       {/* Header */}
       <header className="bg-brand-800 text-white px-4 pt-4 pb-8 pitch-bg">
         <div className="flex items-center gap-3 mb-5">
-          <Link href="/dashboard" className="text-brand-300 text-sm font-medium">← Back</Link>
-          <span className="text-brand-300 text-[10px] ml-auto uppercase tracking-widest">{match.role} · {match.ageGroup} {match.gender}</span>
+          <Link href="/dashboard" className="text-brand-100 text-sm font-medium">← Back</Link>
+          <span className="text-brand-100 text-[10px] ml-auto uppercase tracking-widest">{match.role} · {match.ageGroup} {match.gender}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <div className="flex-1 text-center">
-            <div className="text-[10px] text-brand-300 uppercase tracking-widest mb-2">Home</div>
+            <div className="text-[10px] text-brand-100 uppercase tracking-widest mb-2">Home</div>
             <div className="font-black text-base leading-tight">{match.homeTeam}</div>
           </div>
           <div className="px-5 text-center border-x border-brand-700">
             <div className="text-5xl font-black tracking-tight tabular-nums">{homeScore}–{awayScore}</div>
-            <div className="text-brand-300 text-[10px] mt-2 uppercase tracking-widest">{match.competitionName}</div>
+            <div className="text-brand-100 text-[10px] mt-2 uppercase tracking-widest">{match.competitionName}</div>
           </div>
           <div className="flex-1 text-center">
-            <div className="text-[10px] text-brand-300 uppercase tracking-widest mb-2">Away</div>
+            <div className="text-[10px] text-brand-100 uppercase tracking-widest mb-2">Away</div>
             <div className="font-black text-base leading-tight">{match.awayTeam}</div>
           </div>
         </div>

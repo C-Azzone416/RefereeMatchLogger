@@ -63,7 +63,7 @@ export default function RegisterPage() {
       <div className="mb-8 text-center">
         <div className="text-5xl mb-3">⚽</div>
         <h1 className="text-3xl font-black text-white tracking-tight">Create Account</h1>
-        <p className="text-brand-300 text-sm mt-1">Start tracking your matches</p>
+        <p className="text-brand-100 text-sm mt-1">Start tracking your matches</p>
       </div>
 
       <div className="card max-w-sm mx-auto w-full shadow-2xl">
