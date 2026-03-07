@@ -31,7 +31,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <header className="bg-brand-800 text-white px-4 py-4 flex items-center justify-between pitch-bg">
         <div>
-          <h1 className="font-black text-xl tracking-tight">RefereeMatchTracker</h1>
+          <h1 className="font-black text-xl tracking-tight">Referee Match Tracker</h1>
           <p className="text-brand-100 text-xs mt-0.5">{session.userName}</p>
         </div>
         <Link href="/profile" className="text-brand-200 text-sm font-medium">Profile</Link>
