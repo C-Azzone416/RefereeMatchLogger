@@ -22,9 +22,9 @@ export default async function DashboardPage() {
   const centerCount = allMatches.filter((m) => m.role === "Center").length;
   const arCount = allMatches.filter((m) => m.role !== "Center").length;
 
-  const ninetyDaysAgo = new Date();
-  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-  const recentCount = allMatches.filter((m) => new Date(m.date) >= ninetyDaysAgo).length;
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const recentCount = allMatches.filter((m) => new Date(m.date) >= thirtyDaysAgo).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
 
         <div className="bg-gray-800 rounded-xl p-4 text-center text-white">
           <div className="text-2xl font-black tabular-nums">{recentCount}</div>
-          <div className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Last 90 Days</div>
+          <div className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Last 30 Days</div>
         </div>
 
         {/* Recent matches */}
