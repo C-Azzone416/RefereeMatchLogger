@@ -343,6 +343,14 @@ export default function GameLog({ match }: { match: Match }) {
                   <div className="text-sm text-gray-900 mt-0.5 leading-snug">
                     {eventSummary(ev, match.homeTeam, match.awayTeam)}
                   </div>
+                  {ev.eventType === "red_card" && (
+                    <Link
+                      href={`/matches/${match.id}/supplementals/new?eventId=${ev.id}&team=${ev.team}&playerName=${encodeURIComponent(ev.playerName ?? "")}&playerNumber=${encodeURIComponent(ev.playerNumber ?? "")}&minute=${ev.minute}&stoppageTime=${ev.stoppageTime ?? ""}&period=${ev.period}&offenseCode=${encodeURIComponent((ev.detail?.reason as string) ?? "")}`}
+                      className="text-xs text-brand-600 font-medium mt-1 inline-block"
+                    >
+                      File supplemental →
+                    </Link>
+                  )}
                 </div>
                 <button
                   onClick={() => deleteEvent(ev.id, ev)}

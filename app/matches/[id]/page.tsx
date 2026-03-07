@@ -43,10 +43,13 @@ export default async function MatchDetailPage({
   if (!session.userId) redirect("/login");
 
   const { id } = await params;
-  const match = await db.match.findFirst({
-    where: { id, userId: session.userId },
-    include: { events: { orderBy: [{ period: "asc" }, { minute: "asc" }] } },
-  });
+  const [match, supplementalCount] = await Promise.all([
+    db.match.findFirst({
+      where: { id, userId: session.userId },
+      include: { events: { orderBy: [{ period: "asc" }, { minute: "asc" }] } },
+    }),
+    db.supplementalReport.count({ where: { matchId: id } }),
+  ]);
 
   if (!match) redirect("/dashboard");
 
@@ -161,6 +164,26 @@ export default async function MatchDetailPage({
         ) : (
           <div className="card text-center py-6 text-gray-400 text-sm">No events logged.</div>
         )}
+
+        {/* Supplemental reports */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-gray-900">Supplemental Reports</h2>
+            {supplementalCount > 0 && (
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+                {supplementalCount}
+              </span>
+            )}
+          </div>
+          <Link
+            href={`/matches/${id}/supplementals`}
+            className="btn-secondary w-full text-center block text-sm"
+          >
+            {supplementalCount > 0
+              ? `View ${supplementalCount} Report${supplementalCount !== 1 ? "s" : ""}`
+              : "Create Supplemental Report"}
+          </Link>
+        </div>
 
         {/* Export actions */}
         <MatchReportActions matchId={id} />
