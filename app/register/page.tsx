@@ -100,7 +100,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-brand-800 pitch-bg">
+    <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-brand-800 pitch-bg pitch-lines">
       <div className="mb-8 text-center">
         <div className="text-5xl mb-3">⚽</div>
         <h1 className="text-3xl font-black text-white tracking-tight">Create Account</h1>
