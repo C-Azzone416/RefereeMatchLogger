@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/session";
+import { sendVerificationEmail } from "@/lib/email";
+
+function generateCode(): string {
+  return String(crypto.randomInt(100000, 999999));
+}
+
+function hashCode(code: string): string {
+  return crypto.createHash("sha256").update(code).digest("hex");
+}
 
 export async function POST(req: NextRequest) {
   const { name, email, password, badgeNumber, currentGrade, state } = await req.json();
@@ -20,7 +29,10 @@ export async function POST(req: NextRequest) {
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await db.user.create({
+  const code = generateCode();
+  const expiry = new Date(Date.now() + 15 * 60 * 1000);
+
+  await db.user.create({
     data: {
       name,
       email: email.toLowerCase(),
@@ -28,13 +40,15 @@ export async function POST(req: NextRequest) {
       badgeNumber: badgeNumber || null,
       currentGrade: currentGrade || "Grassroots",
       state: state || null,
+      emailVerified: false,
+      emailVerificationCode: hashCode(code),
+      emailVerificationExpiry: expiry,
+      emailVerificationAttempts: 0,
+      emailVerificationSentAt: new Date(),
     },
   });
 
-  const session = await getSession();
-  session.userId = user.id;
-  session.userName = user.name;
-  await session.save();
+  await sendVerificationEmail(email.toLowerCase(), code);
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, emailVerified: false });
 }
