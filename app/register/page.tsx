@@ -54,6 +54,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -70,6 +71,12 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    if (form.password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
 
     const res = await fetch("/api/auth/register", {
@@ -117,7 +124,11 @@ export default function RegisterPage() {
           </div>
           <div>
             <label className="label">Password</label>
-            <input className="input" type="password" value={form.password} onChange={(e) => set("password", e.target.value)} required minLength={8} />
+            <input className="input" type="password" value={form.password} onChange={(e) => set("password", e.target.value)} required minLength={8} autoComplete="new-password" />
+          </div>
+          <div>
+            <label className="label">Confirm Password</label>
+            <input className="input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
           </div>
           <div>
             <label className="label">Badge Number (optional)</label>
