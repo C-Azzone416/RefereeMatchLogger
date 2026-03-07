@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RefereeMatchTracker",
+  title: "Referee Match Tracker",
   description: "Match reporting and upgrade tracking for soccer officials",
   manifest: "/manifest.json",
 };

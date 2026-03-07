@@ -47,7 +47,7 @@ function LoginForm() {
     <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-brand-800 pitch-bg pitch-lines">
       <div className="mb-8 text-center">
         <div className="text-5xl mb-3">⚽</div>
-        <h1 className="text-3xl font-black text-white tracking-tight">RefereeMatchTracker</h1>
+        <h1 className="text-3xl font-black text-white tracking-tight">Referee Match Tracker</h1>
         <p className="text-brand-100 text-sm mt-1">Sign in to your account</p>
       </div>
 
