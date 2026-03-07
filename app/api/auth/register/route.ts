@@ -29,15 +29,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
     }
 
-    // Unverified account — treat as a resend, update password in case it changed
-    const passwordHash = await bcrypt.hash(password, 12);
+    // Unverified account — treat as a resend. Do NOT update the password;
+    // allowing callers to overwrite the password here would let anyone
+    // hijack an unverified account by registering with the same email.
     const code = generateCode();
     const expiry = new Date(Date.now() + 15 * 60 * 1000);
 
     await db.user.update({
       where: { id: existing.id },
       data: {
-        passwordHash,
         emailVerificationCode: hashCode(code),
         emailVerificationExpiry: expiry,
         emailVerificationAttempts: 0,
