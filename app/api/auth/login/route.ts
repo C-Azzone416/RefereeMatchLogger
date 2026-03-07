@@ -20,6 +20,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
   }
 
+  if (!user.emailVerified) {
+    return NextResponse.json(
+      { error: "Please verify your email before logging in. Check your inbox (and junk folder) for the verification code.", emailVerified: false },
+      { status: 403 }
+    );
+  }
+
   const session = await getSession();
   session.userId = user.id;
   session.userName = user.name;

@@ -15,6 +15,12 @@ model User {
   badgeNumber   String?
   currentGrade  String?  // e.g. "Grassroots", "Grade 8", "Grade 7"
   state         String?  // US state association
+  emailVerified              Boolean   @default(false)
+  emailVerificationCode      String?   // SHA-256 hash of the 6-digit code
+  emailVerificationExpiry    DateTime?
+  emailVerificationAttempts  Int       @default(0)
+  emailVerificationSentAt    DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
