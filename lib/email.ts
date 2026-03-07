@@ -10,6 +10,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to,
+    subject: "Reset your Referee Match Tracker password",
+    text: `You requested a password reset.\n\nClick the link below to set a new password. This link expires in 1 hour.\n\n${resetUrl}\n\nIf you didn't request this, you can ignore this email — your password has not been changed.`,
+    html: `
+      <p>You requested a password reset.</p>
+      <p><a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#16a34a;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">Reset Password</a></p>
+      <p>This link expires in <strong>1 hour</strong>.</p>
+      <p style="color:#666;font-size:14px;">If the button doesn't work, copy and paste this URL into your browser:</p>
+      <p style="color:#666;font-size:12px;word-break:break-all;">${resetUrl}</p>
+      <p style="color:#666;font-size:14px;">If you didn't request a password reset, you can ignore this email — your password has not been changed.</p>
+    `,
+  });
+}
+
 export async function sendVerificationEmail(to: string, code: string) {
   await transporter.sendMail({
     from: process.env.SMTP_FROM,
