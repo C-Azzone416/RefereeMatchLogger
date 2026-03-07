@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import VerifyEmail from "@/components/VerifyEmail";
 
 const GRADES = [
   "Grassroots",
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -52,8 +54,8 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    setLoading(false);
+    setPendingEmail(form.email);
   }
 
   return (
@@ -65,6 +67,13 @@ export default function RegisterPage() {
       </div>
 
       <div className="card max-w-sm mx-auto w-full shadow-2xl">
+        {pendingEmail ? (
+          <VerifyEmail
+            email={pendingEmail}
+            onSuccess={() => { router.push("/dashboard"); router.refresh(); }}
+          />
+        ) : (
+        <>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="label">Full Name</label>
@@ -104,6 +113,8 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <Link href="/login" className="text-brand-600 font-medium">Sign in</Link>
         </p>
+        </>
+        )}
       </div>
     </div>
   );
