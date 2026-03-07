@@ -122,3 +122,33 @@ No request body. Clears session cookie.
 ```json
 { "ok": true }
 ```
+
+---
+
+## Match Export
+
+### `POST /api/matches/[id]/export/email`
+
+Sends the match report to a specified email address. Auth required. All user-supplied content is HTML-escaped before inclusion in the email body.
+
+**Request**
+```json
+{ "to": "string (valid email, required)" }
+```
+
+**Response — success (200)**
+```json
+{ "ok": true }
+```
+
+**Response — invalid email (400)**
+```json
+{ "error": "Invalid email address" }
+```
+
+**Response — match not found / not owned by session user (404)**
+```json
+{ "error": "Not found" }
+```
+
+**Note for frontend:** `MatchReportActions.tsx` currently calls `/api/matches/${matchId}/email`. This path needs to be updated to `/api/matches/${matchId}/export/email`.
