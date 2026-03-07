@@ -78,44 +78,56 @@ export async function GET(req: NextRequest) {
       ? new Date(searchParams.get("dateTo")!)
       : undefined;
 
-    const matches = await db.match.findMany({
-      where: {
-        userId: session.userId,
-        ...(role             && { role }),
-        ...(ageGroup         && { ageGroup }),
-        ...(competitionLevel && { competitionLevel }),
-        ...(q && {
-          OR: [
-            { homeTeam:        { contains: q, mode: "insensitive" } },
-            { awayTeam:        { contains: q, mode: "insensitive" } },
-            { competitionName: { contains: q, mode: "insensitive" } },
-            { venue:           { contains: q, mode: "insensitive" } },
-            { homeHeadCoach:   { contains: q, mode: "insensitive" } },
-            { awayHeadCoach:   { contains: q, mode: "insensitive" } },
-          ],
-        }),
-        date: {
-          gte: dateFrom,
-          ...(dateTo && { lte: dateTo }),
+    const limitParam = parseInt(searchParams.get("limit") ?? "20", 10);
+    const limit = Math.min(isNaN(limitParam) || limitParam < 1 ? 20 : limitParam, 100);
+    const offsetParam = parseInt(searchParams.get("offset") ?? "0", 10);
+    const offset = isNaN(offsetParam) || offsetParam < 0 ? 0 : offsetParam;
+
+    const where = {
+      userId: session.userId,
+      ...(role             && { role }),
+      ...(ageGroup         && { ageGroup }),
+      ...(competitionLevel && { competitionLevel }),
+      ...(q && {
+        OR: [
+          { homeTeam:        { contains: q, mode: "insensitive" as const } },
+          { awayTeam:        { contains: q, mode: "insensitive" as const } },
+          { competitionName: { contains: q, mode: "insensitive" as const } },
+          { venue:           { contains: q, mode: "insensitive" as const } },
+          { homeHeadCoach:   { contains: q, mode: "insensitive" as const } },
+          { awayHeadCoach:   { contains: q, mode: "insensitive" as const } },
+        ],
+      }),
+      date: {
+        gte: dateFrom,
+        ...(dateTo && { lte: dateTo }),
+      },
+    };
+
+    const [total, rows] = await Promise.all([
+      db.match.count({ where }),
+      db.match.findMany({
+        where,
+        orderBy: { date: "desc" },
+        skip: offset,
+        take: limit,
+        include: {
+          events: { select: { eventType: true } },
+          _count: { select: { supplementalReports: true } },
         },
-      },
-      orderBy: { date: "desc" },
-      include: {
-        events: { select: { eventType: true } },
-        _count: { select: { supplementalReports: true } },
-      },
-    });
+      }),
+    ]);
 
     // Replace raw events array with lightweight summary counts
-    const result = matches.map(({ events, _count, ...match }) => ({
+    const matches = rows.map(({ events, _count, ...match }) => ({
       ...match,
-      goalCount:        events.filter((e) => e.eventType === "goal").length,
-      yellowCards:      events.filter((e) => e.eventType === "yellow_card").length,
-      redCards:         events.filter((e) => e.eventType === "red_card").length,
+      goalCount:         events.filter((e) => e.eventType === "goal").length,
+      yellowCards:       events.filter((e) => e.eventType === "yellow_card").length,
+      redCards:          events.filter((e) => e.eventType === "red_card").length,
       supplementalCount: _count.supplementalReports,
     }));
 
-    return NextResponse.json(result);
+    return NextResponse.json({ matches, total, limit, offset });
   } catch (err) {
     console.error("GET /api/matches:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

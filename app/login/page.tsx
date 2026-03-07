@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import VerifyEmail from "@/components/VerifyEmail";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,8 +27,12 @@ export default function LoginPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error || "Login failed");
       setLoading(false);
+      if (data.emailVerified === false) {
+        setPendingVerification(true);
+        return;
+      }
+      setError(data.error || "Login failed");
       return;
     }
 
@@ -43,6 +49,13 @@ export default function LoginPage() {
       </div>
 
       <div className="card max-w-sm mx-auto w-full shadow-2xl">
+        {pendingVerification ? (
+          <VerifyEmail
+            email={email}
+            onSuccess={() => { router.push("/dashboard"); router.refresh(); }}
+          />
+        ) : (
+        <>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="label" htmlFor="email">Email</label>
@@ -89,6 +102,8 @@ export default function LoginPage() {
             Register
           </Link>
         </p>
+        </>
+        )}
       </div>
     </div>
   );
