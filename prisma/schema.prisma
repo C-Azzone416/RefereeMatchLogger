@@ -64,6 +64,10 @@ model Match {
   role              String    // "Center", "AR1", "AR2"
   centerRefName     String?
   centerRefBadge    String?
+  ar1Name           String?
+  ar1Badge          String?
+  ar2Name           String?
+  ar2Badge          String?
 
   // Post-match notes
   narrative         String?

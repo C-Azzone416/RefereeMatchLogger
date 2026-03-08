@@ -64,6 +64,12 @@ export async function PATCH(
         ...(body.abandonReason      !== undefined && { abandonReason: body.abandonReason }),
         ...(body.extraTime          !== undefined && { extraTime: body.extraTime }),
         ...(body.penalties          !== undefined && { penalties: body.penalties }),
+        ...(body.centerRefName      !== undefined && { centerRefName: body.centerRefName || null }),
+        ...(body.centerRefBadge     !== undefined && { centerRefBadge: body.centerRefBadge || null }),
+        ...(body.ar1Name            !== undefined && { ar1Name: body.ar1Name || null }),
+        ...(body.ar1Badge           !== undefined && { ar1Badge: body.ar1Badge || null }),
+        ...(body.ar2Name            !== undefined && { ar2Name: body.ar2Name || null }),
+        ...(body.ar2Badge           !== undefined && { ar2Badge: body.ar2Badge || null }),
       },
     });
 

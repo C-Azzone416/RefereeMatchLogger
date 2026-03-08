@@ -13,7 +13,8 @@ export async function POST(req: NextRequest) {
     const {
       date, time, venue, field, competitionName, ageGroup, gender,
       competitionLevel, homeTeam, awayTeam, homeJerseyColor, awayJerseyColor,
-      homeHeadCoach, awayHeadCoach, halfLength, overtimePossible, role, centerRefName, centerRefBadge,
+      homeHeadCoach, awayHeadCoach, halfLength, overtimePossible, role,
+      centerRefName, centerRefBadge, ar1Name, ar1Badge, ar2Name, ar2Badge,
     } = body;
 
     if (!date || !venue || !competitionName || !homeTeam || !awayTeam || !role) {
@@ -43,6 +44,10 @@ export async function POST(req: NextRequest) {
         role,
         centerRefName: centerRefName || null,
         centerRefBadge: centerRefBadge || null,
+        ar1Name: ar1Name || null,
+        ar1Badge: ar1Badge || null,
+        ar2Name: ar2Name || null,
+        ar2Badge: ar2Badge || null,
       },
     });
 
