@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
-import type { Match, GameEvent } from "@prisma/client";
+import type { Match, GameEvent, SupplementalReport } from "@prisma/client";
 import { format } from "date-fns";
+import { INCIDENT_TYPE_LABELS, type IncidentType } from "@/lib/supplementalTypes";
 
 type MatchWithEvents = Match & { events: GameEvent[] };
 type ReportUser = { name: string; badgeNumber: string | null; currentGrade: string | null; state: string | null };
@@ -123,13 +124,22 @@ function buildReportHtml(match: MatchWithEvents, user: ReportUser): string {
        <tr><td colspan="2" style="padding:4px 0;font-size:14px;white-space:pre-wrap;color:#333;">${esc(match.narrative)}</td></tr>`
     : "";
 
+  const ar1Line = match.ar1Name
+    ? `<tr>${cell("AR1")}<td style="padding:4px 0;font-size:14px;">${esc(match.ar1Name)}${match.ar1Badge ? ` (Badge: ${esc(match.ar1Badge)})` : ""}</td></tr>`
+    : "";
+  const ar2Line = match.ar2Name
+    ? `<tr>${cell("AR2")}<td style="padding:4px 0;font-size:14px;">${esc(match.ar2Name)}${match.ar2Badge ? ` (Badge: ${esc(match.ar2Badge)})` : ""}</td></tr>`
+    : "";
+
   const officialsHtml =
     match.role === "Center"
       ? `<tr>${cell("Referee")}<td style="padding:4px 0;font-size:14px;">${esc(user.name)}${user.badgeNumber ? ` (Badge: ${esc(user.badgeNumber)})` : ""}</td></tr>
-         <tr>${cell("Grade")}<td style="padding:4px 0;font-size:14px;">${esc(user.currentGrade) || "—"}</td></tr>`
+         <tr>${cell("Grade")}<td style="padding:4px 0;font-size:14px;">${esc(user.currentGrade) || "—"}</td></tr>
+         ${ar1Line}${ar2Line}`
       : `<tr>${cell("Center Referee")}<td style="padding:4px 0;font-size:14px;">${esc(match.centerRefName) || "—"}${match.centerRefBadge ? ` (Badge: ${esc(match.centerRefBadge)})` : ""}</td></tr>
          <tr>${cell(esc(match.role))}<td style="padding:4px 0;font-size:14px;">${esc(user.name)}${user.badgeNumber ? ` (Badge: ${esc(user.badgeNumber)})` : ""}</td></tr>
-         <tr>${cell("Grade")}<td style="padding:4px 0;font-size:14px;">${esc(user.currentGrade) || "—"}</td></tr>`;
+         <tr>${cell("Grade")}<td style="padding:4px 0;font-size:14px;">${esc(user.currentGrade) || "—"}</td></tr>
+         ${ar1Line}${ar2Line}`;
 
   return `<!DOCTYPE html>
 <html>
@@ -260,6 +270,8 @@ function buildReportText(match: MatchWithEvents, user: ReportUser): string {
     lines.push(`${match.role}: ${user.name}${user.badgeNumber ? ` (Badge: ${user.badgeNumber})` : ""}`);
   }
   lines.push(`Grade: ${user.currentGrade || "—"}`);
+  if (match.ar1Name) lines.push(`AR1: ${match.ar1Name}${match.ar1Badge ? ` (Badge: ${match.ar1Badge})` : ""}`);
+  if (match.ar2Name) lines.push(`AR2: ${match.ar2Name}${match.ar2Badge ? ` (Badge: ${match.ar2Badge})` : ""}`);
 
   if (match.events.length > 0) {
     lines.push("", "MATCH EVENTS", "------------");
@@ -312,6 +324,136 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
+
+type SupplementalWithEvent = SupplementalReport & { gameEvent: GameEvent | null };
+
+function buildSupplementalHtml(report: SupplementalWithEvent, match: Match, user: ReportUser): string {
+  const matchDateStr = format(new Date(match.date), "MMMM d, yyyy");
+  const matchTimeStr = format(new Date(match.date), "h:mm a");
+  const incidentLabel = INCIDENT_TYPE_LABELS[report.incidentType as IncidentType] ?? report.incidentType;
+
+  const teamLabel = report.team === "home" ? match.homeTeam : report.team === "away" ? match.awayTeam : null;
+
+  const row = (label: string, value: string | null | undefined) =>
+    value
+      ? `<tr>
+           <td style="padding:4px 24px 4px 0;font-size:13px;color:#888;font-weight:bold;text-transform:uppercase;width:160px;">${esc(label)}</td>
+           <td style="padding:4px 0;font-size:14px;">${esc(value)}</td>
+         </tr>`
+      : "";
+
+  const minuteStr = report.minute !== null && report.minute !== undefined
+    ? report.stoppageTime ? `${report.minute}+${report.stoppageTime}'` : `${report.minute}'`
+    : null;
+
+  const periodLabels: Record<string, string> = {
+    "1": "First Half", "2": "Second Half",
+    "et1": "Extra Time – 1st Half", "et2": "Extra Time – 2nd Half",
+    "penalties": "Penalty Shootout",
+  };
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:24px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+  <tr><td style="background:#b91c1c;padding:24px 32px;text-align:center;">
+    <h1 style="margin:0;color:#fff;font-size:20px;letter-spacing:2px;text-transform:uppercase;">Supplemental Report</h1>
+    <p style="margin:4px 0 0;color:#fecaca;font-size:13px;">${esc(incidentLabel)}</p>
+  </td></tr>
+  <tr><td style="padding:32px;">
+
+    <p style="font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#333;margin:0 0 8px;">Match</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;border-bottom:2px solid #eee;padding-bottom:24px;">
+      ${row("Competition", match.competitionName)}
+      ${row("Date", `${matchDateStr} at ${matchTimeStr}`)}
+      ${row("Teams", `${match.homeTeam} vs ${match.awayTeam}`)}
+      ${row("Venue", match.field ? `${match.venue}, ${match.field}` : match.venue)}
+      ${row("Reporting Official", `${user.name}${user.badgeNumber ? ` (Badge: ${user.badgeNumber})` : ""}`)}
+    </table>
+
+    <p style="font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#333;margin:0 0 8px;">Incident</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;border-bottom:2px solid #eee;padding-bottom:24px;">
+      ${row("Type", incidentLabel)}
+      ${row("Minute", minuteStr)}
+      ${row("Period", report.period ? (periodLabels[report.period] ?? report.period) : null)}
+      ${row("Field Location", report.fieldLocation)}
+      ${row("Team", teamLabel)}
+      ${report.playerName ? row("Player", `${report.playerNumber ? `#${report.playerNumber} ` : ""}${report.playerName}`) : ""}
+      ${report.officialName ? row("Team Official", `${report.officialName}${report.officialRole ? ` (${report.officialRole})` : ""}`) : ""}
+      ${row("Offense Code", report.offenseCode)}
+    </table>
+
+    ${report.narrative ? `
+    <p style="font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#333;margin:0 0 8px;">Narrative</p>
+    <p style="font-size:14px;white-space:pre-wrap;color:#333;margin:0 0 24px;padding-bottom:24px;border-bottom:2px solid #eee;">${esc(report.narrative)}</p>` : ""}
+
+    <div style="margin-top:32px;padding-top:16px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">
+      Generated by Referee Match Tracker · Sent ${format(new Date(), "MMMM d, yyyy")}
+    </div>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
+function buildSupplementalText(report: SupplementalWithEvent, match: Match, user: ReportUser): string {
+  const matchDateStr = format(new Date(match.date), "MMMM d, yyyy");
+  const incidentLabel = INCIDENT_TYPE_LABELS[report.incidentType as IncidentType] ?? report.incidentType;
+  const teamLabel = report.team === "home" ? match.homeTeam : report.team === "away" ? match.awayTeam : null;
+  const minuteStr = report.minute !== null && report.minute !== undefined
+    ? report.stoppageTime ? `${report.minute}+${report.stoppageTime}'` : `${report.minute}'`
+    : null;
+
+  const lines = [
+    "SUPPLEMENTAL REPORT",
+    "===================",
+    "",
+    `Incident Type: ${incidentLabel}`,
+    `Match: ${match.homeTeam} vs ${match.awayTeam}`,
+    `Date: ${matchDateStr}`,
+    `Competition: ${match.competitionName}`,
+    `Venue: ${match.venue}${match.field ? `, ${match.field}` : ""}`,
+    `Reporting Official: ${user.name}${user.badgeNumber ? ` (Badge: ${user.badgeNumber})` : ""}`,
+    "",
+    "INCIDENT DETAILS",
+    "----------------",
+  ];
+
+  if (minuteStr) lines.push(`Minute: ${minuteStr}`);
+  if (report.period) lines.push(`Period: ${report.period}`);
+  if (report.fieldLocation) lines.push(`Location: ${report.fieldLocation}`);
+  if (teamLabel) lines.push(`Team: ${teamLabel}`);
+  if (report.playerName) lines.push(`Player: ${report.playerNumber ? `#${report.playerNumber} ` : ""}${report.playerName}`);
+  if (report.officialName) lines.push(`Team Official: ${report.officialName}${report.officialRole ? ` (${report.officialRole})` : ""}`);
+  if (report.offenseCode) lines.push(`Offense Code: ${report.offenseCode}`);
+  if (report.narrative) {
+    lines.push("", "NARRATIVE", "---------", report.narrative);
+  }
+  lines.push("", `Generated by Referee Match Tracker · Sent ${format(new Date(), "MMMM d, yyyy")}`);
+  return lines.join("\n");
+}
+
+export async function sendSupplementalReportEmail(
+  to: string,
+  report: SupplementalWithEvent,
+  match: Match,
+  user: ReportUser,
+) {
+  const incidentLabel = INCIDENT_TYPE_LABELS[report.incidentType as IncidentType] ?? report.incidentType;
+  const subject = `Supplemental Report: ${incidentLabel} — ${match.homeTeam} vs ${match.awayTeam} (${format(new Date(match.date), "MMM d, yyyy")})`;
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to,
+    subject,
+    text: buildSupplementalText(report, match, user),
+    html: buildSupplementalHtml(report, match, user),
+  });
+}
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   await transporter.sendMail({
