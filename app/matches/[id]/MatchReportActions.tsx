@@ -13,7 +13,7 @@ export default function MatchReportActions({ matchId }: { matchId: string }) {
     setSending(true);
     setMessage("");
 
-    const res = await fetch(`/api/matches/${matchId}/email`, {
+    const res = await fetch(`/api/matches/${matchId}/export/email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to: email }),
@@ -34,7 +34,7 @@ export default function MatchReportActions({ matchId }: { matchId: string }) {
       <h2 className="font-semibold text-gray-900">Export Report</h2>
 
       <a
-        href={`/api/matches/${matchId}/pdf`}
+        href={`/api/matches/${matchId}/export/pdf`}
         target="_blank"
         className="btn-secondary w-full text-center block"
       >
@@ -42,7 +42,7 @@ export default function MatchReportActions({ matchId }: { matchId: string }) {
       </a>
 
       <a
-        href={`/api/matches/${matchId}/arbiter`}
+        href={`/api/matches/${matchId}/export/arbiter`}
         download
         className="btn-secondary w-full text-center block"
       >
